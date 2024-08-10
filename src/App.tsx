@@ -1,75 +1,61 @@
-import React from "react";
-import "./FromSource/index.css";
-import { pizzaData } from "./FromSource/data";
-
-interface PizzaPros {
-  name: string;
-  ingredient?: string;
-  photoName?: string;
-  price?: number;
-}
-
-const defaultImg =
-  "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTIibPbOeDQQscm9g-fDNdCvROokQJukg8nYQ&s";
-const Pizza = ({ name, photoName, ingredient, price }: PizzaPros) => {
-  return (
-    <div className="pizza">
-      <img src={photoName ?? defaultImg} alt={name} />
-      <div>
-        <h3>{name ?? "Unique"}</h3>
-        <p>{ingredient ?? "Ingredient"}</p>
-        <span>{price ?? 10}</span>
-      </div>
-    </div>
-  );
-};
-
-const Header = () => {
-  return (
-    <header>
-      <h1 className="header">Fast React Pizza Company Co...</h1>
-    </header>
-  );
-};
-
-const Menu = () => {
-  return (
-    <main className="menu">
-      <h2>Our Menu</h2>
-      {pizzaData.length !== 0 ? (
-        <ul className="pizzas">
-          {pizzaData.map((pizza: PizzaPros) => (
-            <Pizza key={pizza.photoName} name={pizza.name} />
-          ))}
-        </ul>
-      ) : (
-        <p>No Pizza's available...</p>
-      )}
-    </main>
-  );
-};
-
-const str = "Mouli VJ";
-const Footer = () => {
-  return (
-    str && (
-      <footer className="footer">
-        <h2> {new Date().toLocaleTimeString()} We are Currently open</h2>
-      </footer>
-    )
-  );
-};
-
-const functionOrder = () => {
-  return <></>;
-};
+import React, { useState } from "react";
 const App = () => {
+  const [step, setStep] = useState(1);
+  const [isOpen, setIsOpen] = useState(true);
+
+  const messages = [
+    "Learn React ⚛️",
+    "Apply for jobs 💼",
+    "Invest your new income 🤑",
+  ];
+
+  const handlePrevious = () => {
+    if (step > 1) setStep((pr) => pr - 1);
+  };
+
+  const handleNext = () => {
+    if (step < 3) setStep((pr) => pr + 1);
+  };
+
   return (
-    <div className="container">
-      <Header />
-      <Menu />
-      <Footer />
-    </div>
+    <>
+      <button className="close" onClick={() => setIsOpen((prev) => !prev)}>
+        &times;
+      </button>
+
+      {isOpen && (
+        <div className="steps">
+          <div className="numbers">
+            <div className={step >= 1 ? "active" : ""}>1</div>
+            <div className={step >= 2 ? "active" : ""}>2</div>
+            <div className={step >= 3 ? "active" : ""}>3</div>
+          </div>
+          <p className="message">
+            Setp : {step} : {messages[step - 1]}
+          </p>
+          <div className="buttons">
+            <button
+              style={{
+                backgroundColor: "#7950f2",
+                color: "#fff",
+              }}
+              onClick={handlePrevious}
+            >
+              Previos
+            </button>
+            <button
+              style={{
+                backgroundColor: "#7950f2",
+                color: "#fff",
+              }}
+              onClick={handleNext}
+            >
+              Next{" "}
+            </button>
+          </div>
+        </div>
+      )}
+    </>
   );
 };
 
