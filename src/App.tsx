@@ -46,7 +46,7 @@ const App = () => {
     setItems(updateItem);
   };
 
-  const handleToggleItem = (id) => {
+  const handleToggleItem = (id: number) => {
     const updatedItem = items.map((item) => {
       if (item.id === id) {
         return {
