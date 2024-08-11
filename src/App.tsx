@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { SetStateAction, useState } from "react";
 
 interface ListItems {
   id: number;
@@ -9,13 +9,73 @@ interface ListItems {
 
 interface ITEM {
   item: ListItems;
+  handleDeleteItems: (id: number) => void;
+  handleToggleItem: (id: number) => void;
 }
 
-const initialItems: ListItems[] = [
-  { id: 1, description: "Passports", quantity: 2, packed: false },
-  { id: 2, description: "cocks", quantity: 12, packed: false },
-  { id: 3, description: "Charger", quantity: 12, packed: false },
-];
+interface FormProp {
+  handleAddItems: (item: ListItems) => void;
+}
+
+interface PackingListProp {
+  packingItems: ListItems[];
+  handleDeleteItems: (id: number) => void;
+  handleToggleItem: (id: number) => void;
+  setItems: React.Dispatch<SetStateAction<ListItems[]>>;
+}
+
+interface Stats {
+  items: ListItems[];
+}
+
+enum SortValues {
+  INPUT = "input",
+  DESCRIPTION = "description",
+  PACKED = "packed",
+}
+
+const App = () => {
+  const [items, setItems] = useState<ListItems[]>([]);
+
+  const handleAddItems = (item: ListItems) => {
+    setItems((prevItem) => [...prevItem, item]);
+  };
+
+  const handleDeleteItems = (id: number) => {
+    const updateItem = items.filter((item) => item.id !== id);
+    setItems(updateItem);
+  };
+
+  const handleToggleItem = (id) => {
+    const updatedItem = items.map((item) => {
+      if (item.id === id) {
+        return {
+          ...item,
+          packed: !item.packed,
+        };
+      }
+      return item;
+    });
+
+    setItems(updatedItem);
+  };
+
+  return (
+    <div className="app">
+      <h2>Travel's List Application</h2>
+      <Logo />
+      <Form handleAddItems={handleAddItems} />
+      <PackingList
+        packingItems={items}
+        handleDeleteItems={handleDeleteItems}
+        handleToggleItem={handleToggleItem}
+        setItems={setItems}
+      />
+      <Stats items={items} />
+    </div>
+  );
+};
+
 const Logo = () => {
   return (
     <>
@@ -24,7 +84,7 @@ const Logo = () => {
   );
 };
 
-const Form = () => {
+const Form = ({ handleAddItems }: FormProp) => {
   const [description, setDescription] = useState("");
   const [quantity, setQuantity] = useState(1);
 
@@ -43,6 +103,7 @@ const Form = () => {
 
     const newItem = { description, quantity, packed: false, id: Date.now() };
     console.log(newItem);
+    handleAddItems(newItem);
     setDescription("");
     setQuantity(1);
   };
@@ -68,30 +129,91 @@ const Form = () => {
   );
 };
 
-const PackingList = () => {
+const PackingList = ({
+  packingItems,
+  handleDeleteItems,
+  handleToggleItem,
+  setItems,
+}: PackingListProp) => {
+  console.log(packingItems);
+
+  const [sortBy, setSortBy] = useState<string>(SortValues.INPUT);
+
+  let sortedItems: ListItems[] = [];
+
+  if (sortBy === SortValues.INPUT) {
+    sortedItems = [...packingItems];
+  }
+
+  if (sortBy === SortValues.DESCRIPTION) {
+    sortedItems = packingItems
+      .slice()
+      .sort((a, b) => a.description.localeCompare(b.description));
+  }
+
+  if (sortBy === SortValues.PACKED) {
+    sortedItems = packingItems
+      .slice()
+      .sort((a, b) => Number(a.packed) - Number(b.packed));
+  }
   return (
     <div className="list">
       <ul className="list">
-        {initialItems.map((item: ListItems) => {
-          return <Item item={item} key={item.id} />;
+        {sortedItems.map((item: ListItems) => {
+          return (
+            <Item
+              item={item}
+              key={item.id}
+              handleDeleteItems={handleDeleteItems}
+              handleToggleItem={handleToggleItem}
+            />
+          );
         })}
       </ul>
+
+      <div className="actions">
+        <select value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
+          <option value={SortValues.INPUT}>Sort by input Order</option>
+          <option value={SortValues.DESCRIPTION}>Sort by description</option>
+          <option value={SortValues.PACKED}>Sort by Packed Status</option>
+        </select>
+        <button onClick={() => setItems([])}>Clear List</button>
+      </div>
     </div>
   );
 };
 
-const Stats = () => {
+const Stats = ({ items }: Stats) => {
+  if (!items.length)
+    return (
+      <>
+        <p className="stats">Start adding Your items to travel</p>;
+      </>
+    );
+
+  const numItems = items.length;
+  const numOfPacked = items.filter((item) => item.packed).length;
+
+  const perCentage = Math.round((numOfPacked / numItems) * 100);
   return (
     <footer className="stats">
-      You have X items on your list, and you already packed X x% of total
+      <p>
+        {perCentage === 100
+          ? "You are ready to go"
+          : `
+      You have ${numItems} items on your list, and you already packed
+      ${numOfPacked} ${Number(perCentage)}% of total
+      `}
+      </p>
     </footer>
   );
 };
 
-const Item = ({ item }: ITEM) => {
+const Item = ({ item, handleDeleteItems, handleToggleItem }: ITEM) => {
   const { id, description, quantity, packed } = item;
   return (
     <li key={id}>
+      <input type="checkbox" onChange={() => handleToggleItem(id)} />
       <span
         style={
           packed
@@ -102,20 +224,8 @@ const Item = ({ item }: ITEM) => {
         {quantity} {""}
         {description}
       </span>
-      <button>❌</button>
+      <button onClick={() => handleDeleteItems(id)}>❌</button>
     </li>
-  );
-};
-
-const App = () => {
-  return (
-    <div className="app">
-      <h2>Travel's List Application</h2>
-      <Logo />
-      <Form />
-      <PackingList />
-      <Stats />
-    </div>
   );
 };
 
