@@ -24,7 +24,7 @@ interface PackingListProp {
   setItems: React.Dispatch<SetStateAction<ListItems[]>>;
 }
 
-interface Stats {
+interface Statss {
   items: ListItems[];
 }
 
@@ -183,7 +183,7 @@ const PackingList = ({
   );
 };
 
-const Stats = ({ items }: Stats) => {
+const Stats = ({ items }: Statss) => {
   if (!items.length)
     return (
       <>
