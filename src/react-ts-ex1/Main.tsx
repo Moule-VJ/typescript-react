@@ -23,12 +23,12 @@ type ImageProps = ComponentProps<"img">;
 const SampleImg = ({ ref }: ImageProps) => {
   return <img ref={ref} />;
 };
-const SampleButton = ({ type, autoFocus, variant, ...rest }: buttonProps) => {
+const SampleButton = ({ type, autoFocus, variant, defaultValue ...rest }: buttonProps) => {
   return (
     <button
       type={type}
       autoFocus={autoFocus}
-      defaultValue="test"
+          defaultValue={ defaultValue}
       {...rest}
       className={variant}
     >
@@ -40,7 +40,7 @@ const SampleButton = ({ type, autoFocus, variant, ...rest }: buttonProps) => {
 const ButtonContainer = () => {
   return (
     <>
-      <SampleButton type="submit" autoFocus={true} />;
+      <SampleButton type="submit" autoFocus={true} variant="primary" defaultValue="test"/>;
       <SampleImg />
     </>
   );
@@ -121,9 +121,30 @@ const Main = () => {
       >
         Click me
       </Button>
-      <ButtonContainer />
+          <ButtonContainer />
+          <SuperButton type="Submit" color="red" size="md"/>
     </div>
   );
 };
 
 export default Main;
+
+
+// Example 2
+
+interface ButtonPropsExp2 { 
+    type: ButtonType;
+    color : "red" | "tomato" | "orange"
+}
+
+interface SuperButtonProps extends ButtonPropsExp2 { 
+    size : "md" | "lg"
+}
+
+const SuperButton = ({type,color,size}:SuperButtonProps) => { 
+
+    return <button style={{
+        color: `${color}`,
+        fontSize:`${size}`
+    }}>{ type}</button>
+}
