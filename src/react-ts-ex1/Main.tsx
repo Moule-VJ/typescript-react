@@ -1,4 +1,4 @@
-import { ComponentProps, useState } from "react";
+import { ComponentProps, useEffect, useRef, useState } from "react";
 
 const convertCurrency = (
   amount: number,
@@ -181,6 +181,54 @@ const SampleButtonExp2 = ({ variant, action }: Buttonexample3) => {
   return (
     <button type={action} className={variant}>
       {variant}
+    </button>
+  );
+};
+
+type User = {
+  name: string;
+  age: number;
+};
+
+// as const example
+const buttonTextOption: string[] = [
+  "Click me",
+  "Click me again",
+  "Click me one more time",
+] as const;
+
+// as User Example
+
+export type Userr = {
+  sessionId: string;
+  name: string;
+};
+
+export type Guest = Omit<Userr, "name">;
+
+export const Button3 = () => {
+  const [user, setUser] = useState<User | null>(null);
+
+  console.log(user);
+  console.log(setUser);
+
+  const ref = useRef<HTMLButtonElement>(null);
+
+  // Local Storage Type Example
+
+  useEffect(() => {
+    const previousBtnColor = localStorage.getItem("buttonColor") as
+      | "red"
+      | "Green"
+      | "Blue";
+    console.log(previousBtnColor);
+  }, []);
+
+  return (
+    <button ref={ref}>
+      {buttonTextOption.map((option) => {
+        return option;
+      })}
     </button>
   );
 };
