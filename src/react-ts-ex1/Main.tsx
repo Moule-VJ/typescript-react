@@ -17,20 +17,29 @@ type Colors = "red" | "blue" | "green";
 type ButtonType = "Submit" | "Reset" | "Button";
 type buttonProps = ComponentProps<"button"> & {
   variant: "primary" | "secondary";
+  func: () => void;
 };
 type ImageProps = ComponentProps<"img">;
 
 const SampleImg = ({ ref }: ImageProps) => {
   return <img ref={ref} />;
 };
-const SampleButton = ({ type, autoFocus, variant, defaultValue ...rest }: buttonProps) => {
+const SampleButton = ({
+  type,
+  autoFocus,
+  variant,
+  defaultValue,
+  func,
+  ...rest
+}: buttonProps) => {
   return (
     <button
       type={type}
       autoFocus={autoFocus}
-          defaultValue={ defaultValue}
+      defaultValue={defaultValue}
       {...rest}
       className={variant}
+      onClick={func}
     >
       Sample--Button
     </button>
@@ -38,9 +47,18 @@ const SampleButton = ({ type, autoFocus, variant, defaultValue ...rest }: button
 };
 
 const ButtonContainer = () => {
+  const autoFocuss = () => console.log("Its focused");
+
   return (
     <>
-      <SampleButton type="submit" autoFocus={true} variant="primary" defaultValue="test"/>;
+      <SampleButton
+        type="submit"
+        autoFocus={true}
+        variant="primary"
+        defaultValue="test"
+        func={autoFocuss}
+      />
+      ;
       <SampleImg />
     </>
   );
@@ -121,30 +139,48 @@ const Main = () => {
       >
         Click me
       </Button>
-          <ButtonContainer />
-          <SuperButton type="Submit" color="red" size="md"/>
+      <ButtonContainer />
+      <SuperButton type="Submit" color="red" size="md" />
+      <SampleButtonExp2 variant="primary" action="submit" />
     </div>
   );
 };
 
 export default Main;
 
-
 // Example 2
 
-interface ButtonPropsExp2 { 
-    type: ButtonType;
-    color : "red" | "tomato" | "orange"
+interface ButtonPropsExp2 {
+  type: ButtonType;
+  color: "red" | "tomato" | "orange";
 }
 
-interface SuperButtonProps extends ButtonPropsExp2 { 
-    size : "md" | "lg"
+interface SuperButtonProps extends ButtonPropsExp2 {
+  size: "md" | "lg";
 }
 
-const SuperButton = ({type,color,size}:SuperButtonProps) => { 
-
-    return <button style={{
+const SuperButton = ({ type, color, size }: SuperButtonProps) => {
+  return (
+    <button
+      style={{
         color: `${color}`,
-        fontSize:`${size}`
-    }}>{ type}</button>
-}
+        fontSize: `${size}`,
+      }}
+    >
+      {type}
+    </button>
+  );
+};
+
+type Buttonexample3 = ComponentProps<"button"> & {
+  variant: "primary" | "secondary";
+  action: "submit";
+};
+
+const SampleButtonExp2 = ({ variant, action }: Buttonexample3) => {
+  return (
+    <button type={action} className={variant}>
+      {variant}
+    </button>
+  );
+};
